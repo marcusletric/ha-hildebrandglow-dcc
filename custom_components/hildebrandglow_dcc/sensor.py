@@ -286,6 +286,58 @@ class Usage(SensorEntity):
                 if value:
                     self._attr_native_value = round(value, 2)
 
+class CurrentUsage(SensorEntity):
+    """Sensor object for daily usage."""
+
+    _attr_device_class = SensorDeviceClass.ENERGY
+    _attr_has_entity_name = True
+    _attr_name = "Usage (today)"
+    _attr_native_unit_of_measurement = UnitOfEnergy.KILO_WATT_HOUR
+    _attr_state_class = SensorStateClass.MEASUREMENT
+
+    prevValue = 0
+
+    def __init__(self, hass: HomeAssistant, resource, virtual_entity) -> None:
+        """Initialize the sensor."""
+        self._attr_unique_id = resource.id
+
+        self.hass = hass
+        self.initialised = False
+        self.resource = resource
+        self.virtual_entity = virtual_entity
+
+    @property
+    def device_info(self) -> DeviceInfo:
+        """Return device information."""
+        return DeviceInfo(
+            identifiers={(DOMAIN, self.resource.id)},
+            manufacturer="Hildebrand",
+            model="Glow (DCC)",
+            name=device_name(self.resource, self.virtual_entity),
+        )
+
+    @property
+    def icon(self) -> str | None:
+        """Icon to use in the frontend."""
+        # Only the gas usage sensor needs an icon as the others inherit from their device class
+        if self.resource.classifier == "gas.consumption":
+            return "mdi:fire"
+
+    async def async_update(self) -> None:
+        """Fetch new data for the sensor."""
+        # Get data on initial startup
+        if not self.initialised:
+            prevValue = await daily_data(self.hass, self.resource)
+            if prevValue:
+                self.initialised = True
+        else:
+            # Only update the sensor if it's between 0-5 or 30-35 minutes past the hour
+            if await should_update():
+                value = await daily_data(self.hass, self.resource)
+                if value:
+                    self._attr_native_value = round(prevValue-value, 2)
+                    prevValue = value
+
 
 class Cost(SensorEntity):
     """Sensor usage for daily cost."""
