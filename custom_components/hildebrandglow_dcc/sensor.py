@@ -85,7 +85,7 @@ async def async_setup_entry(
             if resource.classifier in ["electricity.consumption", "gas.consumption"]:
                 usage_sensor = Usage(hass, resource, virtual_entity)
                 entities.append(usage_sensor)
-                current_usage_sensor = Usage(hass, resource, virtual_entity)
+                current_usage_sensor = CurrentUsage(hass, resource, virtual_entity)
                 entities.append(current_usage_sensor)
                 # Save the usage sensor as a meter so that the cost sensor can reference it
                 meters[resource.classifier] = usage_sensor
