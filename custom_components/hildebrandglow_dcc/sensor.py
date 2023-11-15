@@ -301,7 +301,7 @@ class CurrentUsage(SensorEntity):
 
     def __init__(self, hass: HomeAssistant, resource, virtual_entity) -> None:
         """Initialize the sensor."""
-        self._attr_unique_id = "2" + resource.id
+        self._attr_unique_id = resource.id + "-halfhourly"
 
         self.hass = hass
         self.initialised = False
@@ -331,6 +331,7 @@ class CurrentUsage(SensorEntity):
         if not self.initialised:
             prevValue = await daily_data(self.hass, self.resource)
             if prevValue:
+                self._attr_native_value = 0
                 self.initialised = True
         else:
             # Only update the sensor if it's between 0-5 or 30-35 minutes past the hour
