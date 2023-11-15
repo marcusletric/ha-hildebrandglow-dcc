@@ -287,11 +287,11 @@ class Usage(SensorEntity):
                     self._attr_native_value = round(value, 2)
 
 class CurrentUsage(SensorEntity):
-    """Sensor object for daily usage."""
+    """Sensor object for half-hourly usage."""
 
     _attr_device_class = SensorDeviceClass.ENERGY
     _attr_has_entity_name = True
-    _attr_name = "Usage (today)"
+    _attr_name = "Usage (last 30m)"
     _attr_native_unit_of_measurement = UnitOfEnergy.KILO_WATT_HOUR
     _attr_state_class = SensorStateClass.MEASUREMENT
 
