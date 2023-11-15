@@ -301,7 +301,7 @@ class CurrentUsage(SensorEntity):
 
     def __init__(self, hass: HomeAssistant, resource, virtual_entity) -> None:
         """Initialize the sensor."""
-        self._attr_unique_id = resource.id
+        self._attr_unique_id = "2" + resource.id
 
         self.hass = hass
         self.initialised = False
